@@ -1,11 +1,10 @@
 import Foundation
 import os
-import FirebaseCrashlytics
 import SmartTubeIOSCore
 
-/// Logs to `os.Logger` and forwards `.notice` and `.error` entries to Firebase
-/// Crashlytics as breadcrumbs so they appear in crash reports.
-/// `.debug` entries are only written to `os.log` — too verbose for crash reports.
+/// Logs to `os.Logger`.
+/// Crash reporting is intentionally disabled; this type preserves the existing
+/// call sites without linking runtime behavior to Firebase.
 struct CrashlyticsLogger: Sendable {
     private let logger: Logger
     private let category: String
@@ -18,13 +17,11 @@ struct CrashlyticsLogger: Sendable {
     func notice(_ message: @autoclosure () -> String) {
         let msg = message()
         logger.notice("\(msg, privacy: .public)")
-        Crashlytics.crashlytics().log("[\(category)] \(msg)")
     }
 
     func error(_ message: @autoclosure () -> String) {
         let msg = message()
         logger.error("\(msg, privacy: .public)")
-        Crashlytics.crashlytics().log("[ERR][\(category)] \(msg)")
     }
 
     func debug(_ message: @autoclosure () -> String) {
@@ -33,41 +30,21 @@ struct CrashlyticsLogger: Sendable {
         // Not forwarded — too verbose for crash reports
     }
 
-    /// Records a non-fatal error in Crashlytics with additional key-value context.
-    /// Use this for surfaced errors the user sees (e.g. player errors) so they
-    /// appear as non-fatal issues in the Firebase console.
+    /// Records a non-fatal-style error locally with additional key-value context.
     func recordNonFatal(_ error: Error, userInfo: [String: String] = [:]) {
         let nsError = error as NSError
         let msg = "[\(category)] \(nsError.domain)(\(nsError.code)): \(nsError.localizedDescription)"
         logger.error("\(msg, privacy: .public)")
-        let crashlytics = Crashlytics.crashlytics()
-        crashlytics.log(msg)
         for (key, value) in userInfo {
-            crashlytics.setCustomValue(value, forKey: key)
+            logger.error("\(key, privacy: .public)=\(value, privacy: .public)")
         }
-        crashlytics.record(error: error)
     }
 
-    /// Stamps the video currently being loaded onto Crashlytics' persistent custom keys.
-    /// Called once per `load(video:)` so that both crashes and non-fatals show which
-    /// video was active at the time of the failure.
+    /// Preserved as a no-op while crash reporting is disabled.
     static func setVideoContext(id: String, title: String) {
-        let crashlytics = Crashlytics.crashlytics()
-        crashlytics.setCustomValue(id, forKey: "active_video_id")
-        crashlytics.setCustomValue(title.prefix(120).description, forKey: "active_video_title")
     }
 
-    /// Records a user-triggered diagnostic non-fatal event in Crashlytics.
-    /// All breadcrumbs accumulated during the session are attached to this event,
-    /// giving a detailed picture of the app flow leading up to the user's report.
+    /// Preserved as a no-op while crash reporting is disabled.
     static func sendDiagnosticReport() {
-        let crashlytics = Crashlytics.crashlytics()
-        crashlytics.log("[Diagnostic] User-requested diagnostic report — see breadcrumbs for session flow.")
-        let error = NSError(
-            domain: "SmartTube.UserDiagnostic",
-            code: 0,
-            userInfo: [NSLocalizedDescriptionKey: "User-requested diagnostic report"]
-        )
-        crashlytics.record(error: error)
     }
 }

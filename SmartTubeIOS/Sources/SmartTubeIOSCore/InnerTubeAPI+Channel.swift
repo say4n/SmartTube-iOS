@@ -81,21 +81,26 @@ extension InnerTubeAPI {
         tubeLog.notice("parseChannel header keys=[\((headerDict?.keys.joined(separator: ",")) ?? "nil", privacy: .public)]")
         let header = headerDict?["c4TabbedHeaderRenderer"] as? [String: Any]
             ?? headerDict?["pageHeaderRenderer"] as? [String: Any]
-        let title = header.flatMap { $0["title"] as? String }
-            ?? (header?["pageTitle"] as? String)
-            ?? {
-                // pageHeaderRenderer uses content.pageHeaderViewModel.title.content
-                if let content = (header?["content"] as? [String: Any])?["pageHeaderViewModel"] as? [String: Any] {
-                    return (content["title"] as? [String: Any]).flatMap { extractText($0) }
-                        ?? content["title"] as? String
-                }
-                return nil
-            }()
-            ?? ""
-        tubeLog.notice("parseChannel header=\(header != nil ? "found" : "nil", privacy: .public) title='\(title, privacy: .public)'")
-        let description = header
-            .flatMap { $0["description"] as? [String: Any] }
-            .flatMap { extractText($0) }
+        var title = header?["title"] as? String
+            ?? header?["pageTitle"] as? String
+        // pageHeaderRenderer uses content.pageHeaderViewModel.title.content
+        if title == nil,
+           let content = (header?["content"] as? [String: Any])?["pageHeaderViewModel"] as? [String: Any] {
+            if let titleDict = content["title"] as? [String: Any] {
+                title = extractText(titleDict)
+            }
+            if title == nil {
+                title = content["title"] as? String
+            }
+        }
+        let resolvedTitle = title ?? ""
+        tubeLog.notice("parseChannel header=\(header != nil ? "found" : "nil", privacy: .public) title='\(resolvedTitle, privacy: .public)'")
+        let description: String?
+        if let descriptionDict = header?["description"] as? [String: Any] {
+            description = extractText(descriptionDict)
+        } else {
+            description = nil
+        }
         // avatar: c4TabbedHeaderRenderer uses avatar.thumbnails, pageHeaderRenderer uses banner or content avatar
         let thumbURL: URL? = {
             // c4TabbedHeaderRenderer path
@@ -119,12 +124,12 @@ extension InnerTubeAPI {
 
         let channel = Channel(
             id: channelId,
-            title: title,
+            title: resolvedTitle,
             description: description,
             thumbnailURL: thumbURL,
             subscriberCount: subscribers
         )
-        let videoGroup = try parseVideoGroup(from: json, title: title)
+        let videoGroup = try parseVideoGroup(from: json, title: resolvedTitle)
         return (channel, videoGroup)
     }
 

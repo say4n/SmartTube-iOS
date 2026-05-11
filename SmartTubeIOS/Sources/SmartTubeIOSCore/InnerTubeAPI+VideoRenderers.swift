@@ -439,14 +439,24 @@ extension InnerTubeAPI {
     // MARK: – Shorts reelItemRenderer parser
     private func parseReelItemRenderer(_ r: [String: Any]) -> Video? {
         guard let videoId = r["videoId"] as? String else { return nil }
-        let title = (r["headline"] as? [String: Any]).flatMap { extractText($0) } ?? ""
+        let title: String
+        if let headline = r["headline"] as? [String: Any] {
+            title = extractText(headline) ?? ""
+        } else {
+            title = ""
+        }
         let thumbnails = (r["thumbnail"] as? [String: Any])?["thumbnails"] as? [[String: Any]]
         let thumbURL = thumbnails?.last.flatMap { $0["url"] as? String }.flatMap { URL(string: $0) }
 
         // channelTitle: ownerText or shortBylineText
-        let channelTitle: String = (r["ownerText"] as? [String: Any]).flatMap { extractText($0) }
-            ?? (r["shortBylineText"] as? [String: Any]).flatMap { extractText($0) }
-            ?? ""
+        let channelTitle: String
+        if let ownerText = r["ownerText"] as? [String: Any] {
+            channelTitle = extractText(ownerText) ?? ""
+        } else if let shortBylineText = r["shortBylineText"] as? [String: Any] {
+            channelTitle = extractText(shortBylineText) ?? ""
+        } else {
+            channelTitle = ""
+        }
 
         // channelId: navigationEndpoint.reelWatchEndpoint.channelId (primary)
         // or ownerText/shortBylineText runs[0].navigationEndpoint.browseEndpoint.browseId (fallback)
@@ -474,12 +484,22 @@ extension InnerTubeAPI {
     // MARK: – WEB videoRenderer parser
     func parseVideoRenderer(_ r: [String: Any]) -> Video? {
         guard let videoId = r["videoId"] as? String else { return nil }
-        let title = (r["title"] as? [String: Any]).flatMap { extractText($0) }
-            ?? (r["headline"] as? [String: Any]).flatMap { extractText($0) }
-            ?? ""
-        let channelTitle = (r["ownerText"] as? [String: Any]).flatMap { extractText($0) }
-            ?? (r["shortBylineText"] as? [String: Any]).flatMap { extractText($0) }
-            ?? ""
+        let title: String
+        if let titleText = r["title"] as? [String: Any] {
+            title = extractText(titleText) ?? ""
+        } else if let headline = r["headline"] as? [String: Any] {
+            title = extractText(headline) ?? ""
+        } else {
+            title = ""
+        }
+        let channelTitle: String
+        if let ownerText = r["ownerText"] as? [String: Any] {
+            channelTitle = extractText(ownerText) ?? ""
+        } else if let shortBylineText = r["shortBylineText"] as? [String: Any] {
+            channelTitle = extractText(shortBylineText) ?? ""
+        } else {
+            channelTitle = ""
+        }
 
         // channelId: ownerText (videoRenderer) or shortBylineText (gridVideoRenderer)
         let channelId: String? = {
@@ -496,10 +516,18 @@ extension InnerTubeAPI {
         let thumbURL = thumbnails?.last.flatMap { $0["url"] as? String }.flatMap { URL(string: $0) }
 
         // duration: lengthText (videoRenderer) or thumbnailOverlays[N].thumbnailOverlayTimeStatusRenderer.text (gridVideoRenderer)
-        let lengthText: String? = (r["lengthText"] as? [String: Any]).flatMap { extractText($0) }
-            ?? (r["thumbnailOverlays"] as? [[String: Any]])?
-                .compactMap { ($0["thumbnailOverlayTimeStatusRenderer"] as? [String: Any])?["text"] as? [String: Any] }
-                .first.flatMap { extractText($0) }
+        var lengthText: String?
+        if let lengthTextDict = r["lengthText"] as? [String: Any] {
+            lengthText = extractText(lengthTextDict)
+        }
+        if lengthText == nil, let thumbnailOverlays = r["thumbnailOverlays"] as? [[String: Any]] {
+            for overlay in thumbnailOverlays {
+                if let text = (overlay["thumbnailOverlayTimeStatusRenderer"] as? [String: Any])?["text"] as? [String: Any] {
+                    lengthText = extractText(text)
+                    break
+                }
+            }
+        }
         let duration = lengthText.flatMap { parseDuration($0) }
 
         let viewCountText = (r["viewCountText"] as? [String: Any]).flatMap { extractText($0) }

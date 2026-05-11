@@ -236,10 +236,13 @@ extension InnerTubeAPI {
         let streamingData = json["streamingData"] as? [String: Any]
         let playabilityDict  = json["playabilityStatus"] as? [String: Any]
         let playabilityStatus = playabilityDict?["status"] as? String ?? "unknown"
-        let playabilityReason = playabilityDict?["reason"] as? String
-            ?? (playabilityDict?["errorScreen"] as? [String: Any])
-                .flatMap { ($0["playerErrorMessageRenderer"] as? [String: Any])?["subreason"] as? [String: Any] }
-                .flatMap { extractText($0) }
+        var playabilityReason = playabilityDict?["reason"] as? String
+        if playabilityReason == nil,
+           let errorScreen = playabilityDict?["errorScreen"] as? [String: Any],
+           let renderer = errorScreen["playerErrorMessageRenderer"] as? [String: Any],
+           let subreason = renderer["subreason"] as? [String: Any] {
+            playabilityReason = extractText(subreason)
+        }
         tubeLog.notice("parsePlayerInfo id=\(videoId, privacy: .public) playability=\(playabilityStatus, privacy: .public) reason=\(playabilityReason ?? "nil", privacy: .public) hasStreamingData=\(streamingData != nil, privacy: .public)")
         // Fail early for definitely-unplayable videos so callers don't waste work on
         // related/SponsorBlock fetches. Mirrors Android playabilityStatus check.

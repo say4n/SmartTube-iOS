@@ -37,8 +37,8 @@ extension PlaybackViewModel {
                                            flushPosition: pos, flushDuration: dur)
             Task { await flush() }
         } else {
-            tracker.transition(to: video.id, cpn: InnerTubeAPI.generateCPN(),
-                               flushPosition: 0, flushDuration: 0)
+            _ = tracker.transition(to: video.id, cpn: InnerTubeAPI.generateCPN(),
+                                   flushPosition: 0, flushDuration: 0)
         }
 
         // Stop and clear the current item immediately so the previous frame
