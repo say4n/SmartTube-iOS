@@ -16,6 +16,7 @@
 		67B1B1732FA5384E0059D847 /* VideoPlaybackRegressionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B1B1722FA5384E0059D847 /* VideoPlaybackRegressionUITests.swift */; };
 		67E2B0742FAD1BBE005F70E6 /* MiniPlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E2B0732FAD1BBE005F70E6 /* MiniPlayerUITests.swift */; };
 		67E2B0B22FADFE59005F70E6 /* PlayerDoubleTapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E2B0B12FADFE59005F70E6 /* PlayerDoubleTapUITests.swift */; };
+		9F4500010000000000000045 /* PlayerMoreMenuLayoutUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4500000000000000000045 /* PlayerMoreMenuLayoutUITests.swift */; };
 		67E6B6872F9535CD00CD372F /* SmartTubeIOS in Frameworks */ = {isa = PBXBuildFile; productRef = 67E6B6862F9535CD00CD372F /* SmartTubeIOS */; };
 		AA01000000000000000000A4 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000000A1 /* ShareViewController.swift */; };
 		AA01000000000000000000A5 /* SmartTubeIOSCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA01000000000000000000B1 /* SmartTubeIOSCore */; };
@@ -112,6 +113,7 @@
 		67B1B1722FA5384E0059D847 /* VideoPlaybackRegressionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackRegressionUITests.swift; sourceTree = "<group>"; };
 		67E2B0732FAD1BBE005F70E6 /* MiniPlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerUITests.swift; sourceTree = "<group>"; };
 		67E2B0B12FADFE59005F70E6 /* PlayerDoubleTapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDoubleTapUITests.swift; sourceTree = "<group>"; };
+		9F4500000000000000000045 /* PlayerMoreMenuLayoutUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerMoreMenuLayoutUITests.swift; sourceTree = "<group>"; };
 		67E6B67B2F9535CD00CD372F /* Smart Tube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Smart Tube.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6ACA5CEA633CF065619F786C /* SmartTube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmartTube.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79E77E6DD18B12CA7A5341D0 /* SmartTubeDownloadWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SmartTubeDownloadWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -227,6 +229,7 @@
 				D5E6F7A8B9C0D1E2F3A4B5C6 /* SubscriptionsScrollRestorationUITests.swift */,
 				1A2B3C4D5E6F1A2B3C4D5E62 /* TVFocusChainUITests.swift */,
 				67B1B1722FA5384E0059D847 /* VideoPlaybackRegressionUITests.swift */,
+				9F4500000000000000000045 /* PlayerMoreMenuLayoutUITests.swift */,
 				AA11000000000000000002A1 /* SettingsUITests.swift */,
 				AA11000000000000000003A1 /* LibraryPlaylistsUITests.swift */,
 				AA11000000000000000004A1 /* SearchUITests.swift */,
@@ -614,6 +617,7 @@
 				67AEAB0F2FAF96BC00820F4D /* VideoDownloadUITests.swift in Sources */,
 				E3F4A5B6C7D8E9F0A1B2C3D4 /* CategoryChipHTTP400UITests.swift in Sources */,
 				67B1B1732FA5384E0059D847 /* VideoPlaybackRegressionUITests.swift in Sources */,
+				9F4500010000000000000045 /* PlayerMoreMenuLayoutUITests.swift in Sources */,
 				D4F5A6B7C8D9E0F1A2B3C4D5 /* SubscriptionsPlaybackUITests.swift in Sources */,
 				E5F6A7B8C9D0E1F2A3B4C5D6 /* SubscriptionsScrollRestorationUITests.swift in Sources */,
 				AA11000000000000000002A2 /* SettingsUITests.swift in Sources */,
