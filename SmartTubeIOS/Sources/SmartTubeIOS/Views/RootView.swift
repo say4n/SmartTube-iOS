@@ -129,6 +129,7 @@ struct MainTabView: View {
     #if os(iOS)
     @Environment(PlayerStateStore.self) private var playerState
     @Environment(BrowseViewModel.self) private var browseVM
+    @Environment(SettingsStore.self) private var store
     #endif
 
     var body: some View {
@@ -140,7 +141,11 @@ struct MainTabView: View {
         let _ = rootLog.notice("[MainTabView] body re-render — presentation=\(String(describing: playerState.presentation)) fullScreenVideo=\(fullScreenVideo?.id ?? "nil")")
         let fullScreenBinding = Binding<Video?>(
             get: { fullScreenVideo },
-            set: { if $0 == nil { playerState.minimize() } }
+            set: {
+                if $0 == nil {
+                    store.settings.miniPlayerEnabled ? playerState.minimize() : playerState.stop()
+                }
+            }
         )
         #endif
         TabView(selection: $selectedTab) {
@@ -157,10 +162,15 @@ struct MainTabView: View {
         }
         #if os(iOS)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if playerState.presentation == .miniPlayer {
+            if playerState.presentation == .miniPlayer, store.settings.miniPlayerEnabled {
                 MiniPlayerView()
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .animation(.easeInOut(duration: 0.2), value: playerState.presentation)
+            }
+        }
+        .onChange(of: store.settings.miniPlayerEnabled) { _, enabled in
+            if !enabled, playerState.presentation == .miniPlayer {
+                playerState.stop()
             }
         }
         .landscapePlayerCover(item: fullScreenBinding) { video in
