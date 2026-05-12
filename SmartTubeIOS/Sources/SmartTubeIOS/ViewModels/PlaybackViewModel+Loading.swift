@@ -526,6 +526,26 @@ extension PlaybackViewModel {
         player.pause()
         player.replaceCurrentItem(with: nil)
         isPlaying = false
+        currentVideo = nil
+        playerInfo = nil
+        currentTime = 0
+        duration = 0
+        error = nil
+        controlsVisible = false
+        isScrubbing = false
+        availableFormats = []
+        selectedFormat = nil
+        sponsorSegments = []
+        currentToastSegment = nil
+        relatedVideos = []
+        chapters = []
+        endCards = []
+        availableCaptions = []
+        selectedCaption = nil
+        currentCaptionCue = nil
+        captionCues = []
+        availableAudioTracks = []
+        selectedAudioTrack = nil
         loadTask?.cancel()
         loadTask = nil
         phase2Task?.cancel()

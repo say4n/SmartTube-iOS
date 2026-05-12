@@ -95,7 +95,7 @@ public final class PlayerStateStore {
     /// Load `video` (if not already loaded) and present the full-screen player.
     func play(video: Video) {
         storeLog.notice("[PlayerStateStore] play — id=\(video.id) currentPresentation=\(String(describing: self.presentation))")
-        if vm.currentVideoId != video.id {
+        if presentation == .hidden || vm.currentVideoId != video.id {
             vm.load(video: video)
         }
         currentVideo = video
