@@ -24,20 +24,12 @@ struct FullScreenPlayerLayerView: UIViewRepresentable {
         container.backgroundColor = .black
         container.isAccessibilityElement = false
         container.accessibilityElementsHidden = true
-        hostView.videoGravity = videoGravity
-        hostView.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(hostView)
-        NSLayoutConstraint.activate([
-            hostView.topAnchor.constraint(equalTo: container.topAnchor),
-            hostView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            hostView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            hostView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-        ])
+        hostView.attach(to: container, videoGravity: videoGravity)
         return container
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
-        hostView.videoGravity = videoGravity
+        hostView.attach(to: uiView, videoGravity: videoGravity)
     }
 }
 #endif

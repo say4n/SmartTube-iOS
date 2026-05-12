@@ -91,6 +91,11 @@ final class MiniPlayerUITests: XCTestCase {
         minimizePlayer()
         XCTAssertTrue(miniPlayerBar.waitForExistence(timeout: 5),
                       "miniPlayer.bar should appear after tapping the back button")
+        let searchTab = app.tabBars.buttons["Search"].firstMatch
+        XCTAssertTrue(searchTab.waitForExistence(timeout: 5),
+                      "Tab bar should remain visible while mini-player is showing")
+        XCTAssertTrue(searchTab.isHittable,
+                      "Mini-player should not cover the tab bar")
         let chipBar = app.scrollViews["home.chipBar"]
         XCTAssertTrue(chipBar.waitForExistence(timeout: 5),
                       "home.chipBar should be visible while mini-player is showing")

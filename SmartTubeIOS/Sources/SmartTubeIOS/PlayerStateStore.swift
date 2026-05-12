@@ -19,6 +19,7 @@ private let storeLog = Logger(subsystem: "com.void.smarttube.app", category: "Pl
 final class PersistentPlayerHostView: UIView {
 
     let playerLayer = AVPlayerLayer()
+    private var edgeConstraints: [NSLayoutConstraint] = []
 
     var videoGravity: AVLayerVideoGravity {
         get { playerLayer.videoGravity }
@@ -36,6 +37,23 @@ final class PersistentPlayerHostView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
+    }
+
+    func attach(to container: UIView, videoGravity: AVLayerVideoGravity) {
+        self.videoGravity = videoGravity
+        translatesAutoresizingMaskIntoConstraints = false
+
+        guard superview !== container else { return }
+
+        NSLayoutConstraint.deactivate(edgeConstraints)
+        container.addSubview(self)
+        edgeConstraints = [
+            topAnchor.constraint(equalTo: container.topAnchor),
+            bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            trailingAnchor.constraint(equalTo: container.trailingAnchor),
+        ]
+        NSLayoutConstraint.activate(edgeConstraints)
     }
 }
 

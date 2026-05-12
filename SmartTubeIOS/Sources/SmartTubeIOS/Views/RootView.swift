@@ -147,10 +147,14 @@ struct MainTabView: View {
                 }
             }
         )
+        let showsMiniPlayer = playerState.presentation == .miniPlayer && store.settings.miniPlayerEnabled
         #endif
         TabView(selection: $selectedTab) {
             ForEach(AppSection.allCases) { section in
                 NavigationStack { section.destination(api: api) }
+                    #if os(iOS)
+                    .miniPlayerInset(isPresented: showsMiniPlayer && section == selectedTab)
+                    #endif
                     .tabItem { Label(section.rawValue, systemImage: section.icon) }
                     .tag(section)
                     .accessibilityIdentifier("tab.\(section.rawValue.lowercased())")
@@ -161,13 +165,6 @@ struct MainTabView: View {
             selectedTab = .search
         }
         #if os(iOS)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if playerState.presentation == .miniPlayer, store.settings.miniPlayerEnabled {
-                MiniPlayerView()
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .animation(.easeInOut(duration: 0.2), value: playerState.presentation)
-            }
-        }
         .onChange(of: store.settings.miniPlayerEnabled) { _, enabled in
             if !enabled, playerState.presentation == .miniPlayer {
                 playerState.stop()
@@ -184,6 +181,20 @@ struct MainTabView: View {
         #endif
     }
 }
+
+#if os(iOS)
+private extension View {
+    func miniPlayerInset(isPresented: Bool) -> some View {
+        safeAreaInset(edge: .bottom, spacing: 0) {
+            if isPresented {
+                MiniPlayerView()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isPresented)
+    }
+}
+#endif
 
 // MARK: - MainTVTabView  (tvOS)
 // Top-bar TabView is the Apple-recommended navigation pattern for Apple TV.
