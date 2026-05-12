@@ -96,7 +96,7 @@ extension PlayerView {
                     },
                     onLongPressStart: { vm.beginHoldSpeed() },
                     onLongPressEnd:   { vm.endHoldSpeed() },
-                    onSwipeDown: { store.settings.miniPlayerEnabled ? playerState.minimize() : playerState.stop() },
+                    onSwipeDown: { handleSwipeDownDismiss() },
                     // Disabled during scrubbing so the Slider can claim touches uncontested.
                     // Also disabled when controls are visible so SwiftUI buttons (Menu, etc.)
                     // receive touches directly without UIKit gesture interference.
@@ -145,7 +145,7 @@ extension PlayerView {
                                     guard !isTransitioning, !vm.isScrubbing else { return }
                                     // Swipe-down → minimize to mini-player (or stop if disabled)
                                     if dy > 50, abs(dy) > abs(dx) {
-                                        store.settings.miniPlayerEnabled ? playerState.minimize() : playerState.stop()
+                                        handleSwipeDownDismiss()
                                         return
                                     }
                                     guard abs(dx) > abs(dy) else { return }
@@ -580,6 +580,18 @@ extension PlayerView {
     }
 
     // MARK: - Controls overlay
+
+    #if os(iOS)
+    func handleSwipeDownDismiss() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            slideOffset = 0
+        }
+        Task { @MainActor in
+            await Task.yield()
+            store.settings.miniPlayerEnabled ? playerState.minimize() : playerState.stop()
+        }
+    }
+    #endif
 
     /// Constructs the platform-appropriate `PlayerControlsOverlay` for this view.
     @ViewBuilder
